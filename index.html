@@ -100,8 +100,25 @@
         
         .mode-button-container {
             position: absolute;
-            top: 0;
-            right: 0;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+            display: flex;
+            gap: 8px;
+        }
+        
+        @media (max-width: 600px) {
+            .mode-button-container {
+                position: static;
+                justify-content: center;
+                margin-bottom: 10px;
+                order: -1;
+            }
+            
+            .header {
+                display: flex;
+                flex-direction: column;
+            }
         }
         
         .mode-status {
