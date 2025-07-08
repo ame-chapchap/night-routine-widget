@@ -3,6 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <style>
+        /* iframe埋め込み用の調整 */
+        body {
+            margin: 0;
+            padding: 16px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        /* Notion埋め込み用の高さ調整 */
+        @media (max-height: 600px) {
+            body {
+                padding: 8px;
+            }
+            .title {
+                font-size: 1.5rem;
+                margin-bottom: 0.25rem;
+            }
+            .subtitle {
+                font-size: 0.75rem;
+                margin-bottom: 1rem;
+            }
+            .control-panel {
+                padding: 16px;
+                margin-bottom: 16px;
+            }
+            .timeline-panel {
+                padding: 16px;
+            }
+        }
+    </style>
     <title>夜のルーティン管理</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -69,7 +105,7 @@
         
         .form-label {
             font-size: 0.875rem;
-            font-weight: 500;
+            font-weight: 600;
             color: #7c3aed;
         }
         
@@ -84,7 +120,7 @@
             border: 2px solid #c4b5fd;
             border-radius: 12px;
             color: #7c3aed;
-            font-weight: 500;
+            font-weight: 600;
             appearance: none;
             cursor: pointer;
         }
@@ -132,7 +168,7 @@
             flex: 1;
             text-align: center;
             font-size: 1.125rem;
-            font-weight: 600;
+            font-weight: 700;
             color: #7c3aed;
         }
         
@@ -148,7 +184,7 @@
             padding: 12px;
             border: none;
             border-radius: 12px;
-            font-weight: 500;
+            font-weight: 600;
             color: white;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -193,7 +229,7 @@
             grid-template-columns: 80px 40px 1fr;
             align-items: center;
             gap: 16px;
-            height: 120px;
+            height: 80px;
             position: relative;
         }
         
@@ -213,7 +249,7 @@
             position: absolute;
             left: 50%;
             width: 4px;
-            background: linear-gradient(to bottom, #a855f7, #8b5cf6, #7c3aed);
+            background: #8b5cf6;
             transform: translateX(-50%);
             z-index: 1;
         }
@@ -251,8 +287,10 @@
             background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
             border: 2px solid #c4b5fd;
             border-radius: 12px;
-            padding: 16px;
+            padding: 12px;
             width: 100%;
+            display: flex;
+            align-items: center;
         }
         
         .speech-bubble::before {
@@ -289,7 +327,11 @@
             color: #7c3aed;
             resize: none;
             font-family: inherit;
-            font-size: 1rem;
+            font-size: 0.9rem;
+            min-height: 20px;
+            line-height: 1.4;
+            padding: 0;
+            margin: 0;
         }
         
         .speech-textarea::placeholder {
@@ -779,7 +821,7 @@
                         <div class="speech-bubble">
                             <textarea 
                                 class="speech-textarea"
-                                rows="2" 
+                                rows="1" 
                                 placeholder="${placeholderText}"
                                 onInput="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'; saveToLocalStorage();"
                             >${savedValue}</textarea>
