@@ -1039,7 +1039,7 @@
         // 初期状態で編集モードのボタンを強調
         updateModeButtons();
 
-        // LocalStorage機能
+        // LocalStorage機能を強化
         function saveToLocalStorage() {
             try {
                 const data = {
@@ -1047,19 +1047,42 @@
                     bedTime: document.getElementById('bedTime').value,
                     interval: currentInterval,
                     schedule: saveScheduleData(),
-                    savedAt: new Date().toISOString()
+                    savedAt: new Date().toISOString(),
+                    version: '1.0'
                 };
+                
+                // 複数のキーで保存（冗長化）
                 localStorage.setItem('nightRoutineData', JSON.stringify(data));
+                localStorage.setItem('nightRoutineBackup', JSON.stringify(data));
+                
+                // セッションストレージにも保存
+                sessionStorage.setItem('nightRoutineData', JSON.stringify(data));
+                
+                console.log('データを保存しました:', data);
+                return true;
             } catch (error) {
                 console.error('LocalStorage保存エラー:', error);
+                return false;
             }
         }
         
         function loadFromLocalStorage() {
             try {
-                const savedData = localStorage.getItem('nightRoutineData');
+                let savedData = localStorage.getItem('nightRoutineData');
+                
+                // メインデータがない場合はバックアップを試す
+                if (!savedData) {
+                    savedData = localStorage.getItem('nightRoutineBackup');
+                }
+                
+                // それでもない場合はセッションストレージを試す
+                if (!savedData) {
+                    savedData = sessionStorage.getItem('nightRoutineData');
+                }
+                
                 if (savedData) {
                     const data = JSON.parse(savedData);
+                    console.log('データを復元しました:', data);
                     
                     // 設定を復元
                     if (data.startTime) document.getElementById('startTime').value = data.startTime;
@@ -1084,11 +1107,27 @@
                             });
                         }
                     }, 100);
+                    
+                    return true;
+                } else {
+                    console.log('保存されたデータが見つかりません');
+                    return false;
                 }
             } catch (error) {
                 console.error('LocalStorage読み込みエラー:', error);
+                return false;
             }
         }
+        
+        // ページ離脱前に強制保存
+        window.addEventListener('beforeunload', function() {
+            saveToLocalStorage();
+        });
+        
+        // 定期的な自動保存（30秒ごと）
+        setInterval(function() {
+            saveToLocalStorage();
+        }, 30000);
     </script>
 </body>
 </html>
