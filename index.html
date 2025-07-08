@@ -1,45 +1,977 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>Night Routine Widget</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100vw;
-      height: 100vh;
-      background: linear-gradient(to bottom, #f5f5fa, #f0f0fb);
-      font-family: 'Noto Sans JP', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: start;
-    }
-
-    .container {
-      max-width: 800px;
-      width: 100%;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-    iframe {
-      width: 100%;
-      height: 1000px; /* 必要に応じて調整 */
-      border: none;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(63, 69, 81, 0.16);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夜のルーティン管理</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 50%, #fef3ff 100%);
+            min-height: 100vh;
+            padding: 24px;
+        }
+        
+        .container {
+            max-width: 1024px;
+            margin: 0 auto;
+        }
+        
+        .title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #7c3aed;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            font-size: 0.875rem;
+            color: #8b5cf6;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .control-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 32px;
+            border: 1px solid rgba(196, 181, 253, 0.5);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+        
+        @media (min-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #7c3aed;
+        }
+        
+        .select-wrapper {
+            position: relative;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 12px 40px 12px 16px;
+            background: white;
+            border: 2px solid #c4b5fd;
+            border-radius: 12px;
+            color: #7c3aed;
+            font-weight: 500;
+            appearance: none;
+            cursor: pointer;
+        }
+        
+        .form-select:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+        
+        .select-arrow {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #8b5cf6;
+        }
+        
+        .interval-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .interval-btn {
+            width: 40px;
+            height: 40px;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7c3aed;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .interval-btn:hover {
+            background: #e5e7eb;
+            transform: translateY(-1px);
+        }
+        
+        .interval-display {
+            flex: 1;
+            text-align: center;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #7c3aed;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .btn {
+            width: 224px;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 500;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, #8b5cf6, #6366f1);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(to right, #7c3aed, #4f46e5);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(to right, #22d3ee, #3b82f6);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(to right, #06b6d4, #2563eb);
+        }
+        
+        .timeline-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 32px;
+            border: 1px solid rgba(196, 181, 253, 0.5);
+        }
+        
+        .timeline-container {
+            position: relative;
+        }
+        
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 80px 40px 1fr;
+            align-items: center;
+            gap: 16px;
+            height: 120px;
+            position: relative;
+        }
+        
+        .time-display {
+            text-align: right;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #7c3aed;
+        }
+        
+        .timeline-center {
+            position: relative;
+            height: 100%;
+        }
+        
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            width: 4px;
+            background: linear-gradient(to bottom, #a855f7, #8b5cf6, #7c3aed);
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+        
+        .timeline-line.top {
+            top: 0;
+            height: 50%;
+        }
+        
+        .timeline-line.bottom {
+            top: 50%;
+            height: 50%;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 16px;
+            height: 16px;
+            background: #8b5cf6;
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2);
+            z-index: 2;
+        }
+        
+        .speech-bubble-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .speech-bubble {
+            position: relative;
+            background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+            border: 2px solid #c4b5fd;
+            border-radius: 12px;
+            padding: 16px;
+            width: 100%;
+        }
+        
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-right: 10px solid #c4b5fd;
+        }
+        
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            left: -7px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-right: 8px solid #f3e8ff;
+        }
+        
+        .speech-textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #7c3aed;
+            resize: none;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        
+        .speech-textarea::placeholder {
+            color: #a78bfa;
+        }
+        
+        .mode-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 24px;
+            margin-bottom: 16px;
+        }
+        
+        .mode-btn {
+            width: 128px;
+            padding: 8px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .mode-btn-view {
+            background: linear-gradient(to right, #6366f1, #8b5cf6);
+        }
+        
+        .mode-btn-view:hover {
+            background: linear-gradient(to right, #4f46e5, #7c3aed);
+        }
+        
+        .mode-btn-edit {
+            background: linear-gradient(to right, #f59e0b, #ea580c);
+        }
+        
+        .mode-btn-edit:hover {
+            background: linear-gradient(to right, #d97706, #dc2626);
+        }
+        
+        .save-info {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #8b5cf6;
+            margin-top: 8px;
+        }
+        
+        .save-status {
+            text-align: center;
+            font-size: 0.875rem;
+            color: #7c3aed;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            margin-top: 8px;
+        }
+        
+        .view-mode-text {
+            color: #7c3aed;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+        
+        .svg-icon {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <iframe 
-      loading="lazy"
-      src="https://www.canva.com/design/DAGslJzM4cQ/_w_iQzVNBU5uCMjd6F-quQ/view?embed"
-      allowfullscreen="allowfullscreen"
-      allow="fullscreen">
-    </iframe>
-  </div>
+    <div class="container">
+        <h1 class="title">🌙 Night Routine</h1>
+        <p class="subtitle">就寝までの時間を計画しましょう</p>
+        
+        <!-- コントロール枠 -->
+        <div class="control-panel">
+            <div class="form-grid">
+                <!-- 開始時刻 -->
+                <div class="form-group">
+                    <label class="form-label">開始時刻</label>
+                    <div class="select-wrapper">
+                        <select id="startTime" class="form-select">
+                            <option value="00:00">00:00</option>
+                            <option value="00:15">00:15</option>
+                            <option value="00:30">00:30</option>
+                            <option value="00:45">00:45</option>
+                            <option value="01:00">01:00</option>
+                            <option value="01:15">01:15</option>
+                            <option value="01:30">01:30</option>
+                            <option value="01:45">01:45</option>
+                            <option value="02:00">02:00</option>
+                            <option value="02:15">02:15</option>
+                            <option value="02:30">02:30</option>
+                            <option value="02:45">02:45</option>
+                            <option value="03:00">03:00</option>
+                            <option value="03:15">03:15</option>
+                            <option value="03:30">03:30</option>
+                            <option value="03:45">03:45</option>
+                            <option value="04:00">04:00</option>
+                            <option value="04:15">04:15</option>
+                            <option value="04:30">04:30</option>
+                            <option value="04:45">04:45</option>
+                            <option value="05:00">05:00</option>
+                            <option value="05:15">05:15</option>
+                            <option value="05:30">05:30</option>
+                            <option value="05:45">05:45</option>
+                            <option value="06:00">06:00</option>
+                            <option value="06:15">06:15</option>
+                            <option value="06:30">06:30</option>
+                            <option value="06:45">06:45</option>
+                            <option value="07:00">07:00</option>
+                            <option value="07:15">07:15</option>
+                            <option value="07:30">07:30</option>
+                            <option value="07:45">07:45</option>
+                            <option value="08:00">08:00</option>
+                            <option value="08:15">08:15</option>
+                            <option value="08:30">08:30</option>
+                            <option value="08:45">08:45</option>
+                            <option value="09:00">09:00</option>
+                            <option value="09:15">09:15</option>
+                            <option value="09:30">09:30</option>
+                            <option value="09:45">09:45</option>
+                            <option value="10:00">10:00</option>
+                            <option value="10:15">10:15</option>
+                            <option value="10:30">10:30</option>
+                            <option value="10:45">10:45</option>
+                            <option value="11:00">11:00</option>
+                            <option value="11:15">11:15</option>
+                            <option value="11:30">11:30</option>
+                            <option value="11:45">11:45</option>
+                            <option value="12:00">12:00</option>
+                            <option value="12:15">12:15</option>
+                            <option value="12:30">12:30</option>
+                            <option value="12:45">12:45</option>
+                            <option value="13:00">13:00</option>
+                            <option value="13:15">13:15</option>
+                            <option value="13:30">13:30</option>
+                            <option value="13:45">13:45</option>
+                            <option value="14:00">14:00</option>
+                            <option value="14:15">14:15</option>
+                            <option value="14:30">14:30</option>
+                            <option value="14:45">14:45</option>
+                            <option value="15:00">15:00</option>
+                            <option value="15:15">15:15</option>
+                            <option value="15:30">15:30</option>
+                            <option value="15:45">15:45</option>
+                            <option value="16:00">16:00</option>
+                            <option value="16:15">16:15</option>
+                            <option value="16:30">16:30</option>
+                            <option value="16:45">16:45</option>
+                            <option value="17:00" selected>17:00</option>
+                            <option value="17:15">17:15</option>
+                            <option value="17:30">17:30</option>
+                            <option value="17:45">17:45</option>
+                            <option value="18:00">18:00</option>
+                            <option value="18:15">18:15</option>
+                            <option value="18:30">18:30</option>
+                            <option value="18:45">18:45</option>
+                            <option value="19:00">19:00</option>
+                            <option value="19:15">19:15</option>
+                            <option value="19:30">19:30</option>
+                            <option value="19:45">19:45</option>
+                            <option value="20:00">20:00</option>
+                            <option value="20:15">20:15</option>
+                            <option value="20:30">20:30</option>
+                            <option value="20:45">20:45</option>
+                            <option value="21:00">21:00</option>
+                            <option value="21:15">21:15</option>
+                            <option value="21:30">21:30</option>
+                            <option value="21:45">21:45</option>
+                            <option value="22:00">22:00</option>
+                            <option value="22:15">22:15</option>
+                            <option value="22:30">22:30</option>
+                            <option value="22:45">22:45</option>
+                            <option value="23:00">23:00</option>
+                            <option value="23:15">23:15</option>
+                            <option value="23:30">23:30</option>
+                            <option value="23:45">23:45</option>
+                        </select>
+                        <div class="select-arrow">
+                            <svg class="svg-icon" viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 就寝時刻 -->
+                <div class="form-group">
+                    <label class="form-label">就寝時刻</label>
+                    <div class="select-wrapper">
+                        <select id="bedTime" class="form-select">
+                            <option value="18:00">18:00</option>
+                            <option value="18:15">18:15</option>
+                            <option value="18:30">18:30</option>
+                            <option value="18:45">18:45</option>
+                            <option value="19:00">19:00</option>
+                            <option value="19:15">19:15</option>
+                            <option value="19:30">19:30</option>
+                            <option value="19:45">19:45</option>
+                            <option value="20:00">20:00</option>
+                            <option value="20:15">20:15</option>
+                            <option value="20:30">20:30</option>
+                            <option value="20:45">20:45</option>
+                            <option value="21:00" selected>21:00</option>
+                            <option value="21:15">21:15</option>
+                            <option value="21:30">21:30</option>
+                            <option value="21:45">21:45</option>
+                            <option value="22:00">22:00</option>
+                            <option value="22:15">22:15</option>
+                            <option value="22:30">22:30</option>
+                            <option value="22:45">22:45</option>
+                            <option value="23:00">23:00</option>
+                            <option value="23:15">23:15</option>
+                            <option value="23:30">23:30</option>
+                            <option value="23:45">23:45</option>
+                            <option value="00:00">00:00</option>
+                            <option value="00:15">00:15</option>
+                            <option value="00:30">00:30</option>
+                            <option value="00:45">00:45</option>
+                            <option value="01:00">01:00</option>
+                            <option value="01:15">01:15</option>
+                            <option value="01:30">01:30</option>
+                            <option value="01:45">01:45</option>
+                            <option value="02:00">02:00</option>
+                            <option value="02:15">02:15</option>
+                            <option value="02:30">02:30</option>
+                            <option value="02:45">02:45</option>
+                            <option value="03:00">03:00</option>
+                            <option value="03:15">03:15</option>
+                            <option value="03:30">03:30</option>
+                            <option value="03:45">03:45</option>
+                            <option value="04:00">04:00</option>
+                            <option value="04:15">04:15</option>
+                            <option value="04:30">04:30</option>
+                            <option value="04:45">04:45</option>
+                            <option value="05:00">05:00</option>
+                            <option value="05:15">05:15</option>
+                            <option value="05:30">05:30</option>
+                            <option value="05:45">05:45</option>
+                            <option value="06:00">06:00</option>
+                            <option value="06:15">06:15</option>
+                            <option value="06:30">06:30</option>
+                            <option value="06:45">06:45</option>
+                            <option value="07:00">07:00</option>
+                            <option value="07:15">07:15</option>
+                            <option value="07:30">07:30</option>
+                            <option value="07:45">07:45</option>
+                            <option value="08:00">08:00</option>
+                            <option value="08:15">08:15</option>
+                            <option value="08:30">08:30</option>
+                            <option value="08:45">08:45</option>
+                            <option value="09:00">09:00</option>
+                            <option value="09:15">09:15</option>
+                            <option value="09:30">09:30</option>
+                            <option value="09:45">09:45</option>
+                            <option value="10:00">10:00</option>
+                            <option value="10:15">10:15</option>
+                            <option value="10:30">10:30</option>
+                            <option value="10:45">10:45</option>
+                            <option value="11:00">11:00</option>
+                            <option value="11:15">11:15</option>
+                            <option value="11:30">11:30</option>
+                            <option value="11:45">11:45</option>
+                            <option value="12:00">12:00</option>
+                            <option value="12:15">12:15</option>
+                            <option value="12:30">12:30</option>
+                            <option value="12:45">12:45</option>
+                            <option value="13:00">13:00</option>
+                            <option value="13:15">13:15</option>
+                            <option value="13:30">13:30</option>
+                            <option value="13:45">13:45</option>
+                            <option value="14:00">14:00</option>
+                            <option value="14:15">14:15</option>
+                            <option value="14:30">14:30</option>
+                            <option value="14:45">14:45</option>
+                            <option value="15:00">15:00</option>
+                            <option value="15:15">15:15</option>
+                            <option value="15:30">15:30</option>
+                            <option value="15:45">15:45</option>
+                            <option value="16:00">16:00</option>
+                            <option value="16:15">16:15</option>
+                            <option value="16:30">16:30</option>
+                            <option value="16:45">16:45</option>
+                            <option value="17:00">17:00</option>
+                            <option value="17:15">17:15</option>
+                            <option value="17:30">17:30</option>
+                            <option value="17:45">17:45</option>
+                        </select>
+                        <div class="select-arrow">
+                            <svg class="svg-icon" viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 間隔設定 -->
+                <div class="form-group">
+                    <label class="form-label">時間間隔</label>
+                    <div class="interval-control">
+                        <button onclick="decreaseInterval()" class="interval-btn">
+                            <svg class="svg-icon" viewBox="0 0 24 24">
+                                <path d="M20 12H4"></path>
+                            </svg>
+                        </button>
+                        <div class="interval-display">
+                            <span id="intervalDisplay">30分おき</span>
+                        </div>
+                        <button onclick="increaseInterval()" class="interval-btn">
+                            <svg class="svg-icon" viewBox="0 0 24 24">
+                                <path d="M12 4v16m8-8H4"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button onclick="generateTimeline(true)" class="btn btn-primary">
+                    時刻を更新
+                </button>
+                <button onclick="generateTimeline()" class="btn btn-secondary">
+                    予定をクリア
+                </button>
+            </div>
+        </div>
+
+        <!-- タイムライン -->
+        <div class="timeline-panel">
+            <div id="timeline" class="timeline-container">
+                <!-- タイムラインアイテムがここに生成されます -->
+            </div>
+            
+            <!-- モード切り替えとデータ管理 -->
+            <div class="mode-buttons">
+                <button onclick="switchToViewMode()" class="mode-btn mode-btn-view">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                        <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                    表示モード
+                </button>
+                <button onclick="switchToEditMode()" class="mode-btn mode-btn-edit">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                        <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    編集
+                </button>
+            </div>
+
+            <div class="save-info">
+                💡 データは自動保存されます（ページ更新しても残ります）
+            </div>
+            <div id="saveStatus" class="save-status"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentInterval = 30; // 分
+        const intervals = [15, 30, 60];
+        let currentIntervalIndex = 1;
+
+        function decreaseInterval() {
+            if (currentIntervalIndex > 0) {
+                currentIntervalIndex--;
+                currentInterval = intervals[currentIntervalIndex];
+                updateIntervalDisplay();
+            }
+        }
+
+        function increaseInterval() {
+            if (currentIntervalIndex < intervals.length - 1) {
+                currentIntervalIndex++;
+                currentInterval = intervals[currentIntervalIndex];
+                updateIntervalDisplay();
+            }
+        }
+
+        function updateIntervalDisplay() {
+            const display = document.getElementById('intervalDisplay');
+            display.textContent = `${currentInterval}分おき`;
+        }
+
+        function timeToMinutes(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+
+        function minutesToTime(minutes) {
+            const hours = Math.floor(minutes / 60) % 24;
+            const mins = minutes % 60;
+            return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+        }
+
+        function saveScheduleData() {
+            const scheduleData = {};
+            const textareas = document.querySelectorAll('#timeline textarea');
+            textareas.forEach((textarea, index) => {
+                const timeElement = textarea.closest('.timeline-item').querySelector('.time-display');
+                if (timeElement && textarea.value.trim()) {
+                    scheduleData[timeElement.textContent] = textarea.value;
+                }
+            });
+            return scheduleData;
+        }
+
+        function generateTimeline(preserveSchedule = false) {
+            const startTime = document.getElementById('startTime').value;
+            const bedTime = document.getElementById('bedTime').value;
+            const timeline = document.getElementById('timeline');
+
+            // 予定を保持する場合は既存のデータを保存
+            let savedSchedule = {};
+            if (preserveSchedule) {
+                savedSchedule = saveScheduleData();
+            }
+            
+            // 設定変更時に自動保存
+            saveToLocalStorage();
+
+            let startMinutes = timeToMinutes(startTime);
+            let endMinutes = timeToMinutes(bedTime);
+
+            // 就寝時刻が開始時刻より早い場合（日をまたぐ場合）
+            if (endMinutes <= startMinutes) {
+                endMinutes += 24 * 60; // 24時間を加算
+            }
+
+            const timeSlots = [];
+            for (let time = startMinutes; time <= endMinutes; time += currentInterval) {
+                timeSlots.push(time);
+            }
+
+            const examples = [
+                '例）夕飯を食べ終わる',
+                '例）お風呂に入る',
+                '例）歯磨きをする',
+                '例）読書をする',
+                '例）明日の準備をする',
+                '例）リラックスタイム',
+                '例）スマホを置く',
+                '例）ベッドに入る'
+            ];
+
+            timeline.innerHTML = '';
+
+            if (timeSlots.length === 0) return;
+
+            // 各タイムブロックを作成
+            timeSlots.forEach((timeMinutes, index) => {
+                const timeStr = minutesToTime(timeMinutes);
+                
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item';
+                
+                // 保存された予定があるかチェック
+                const savedValue = preserveSchedule && savedSchedule[timeStr] ? savedSchedule[timeStr] : '';
+                const placeholderText = index < examples.length ? examples[index] : '予定を入力してください';
+                
+                timelineItem.innerHTML = `
+                    <!-- 左側：時間表示 -->
+                    <div class="time-display">${timeStr}</div>
+                    
+                    <!-- 中央：ドットと縦線 -->
+                    <div class="timeline-center">
+                        <!-- 縦線（上半分） -->
+                        ${index > 0 ? '<div class="timeline-line top"></div>' : ''}
+                        <!-- 縦線（下半分） -->
+                        ${index < timeSlots.length - 1 ? '<div class="timeline-line bottom"></div>' : ''}
+                        <!-- ドット -->
+                        <div class="timeline-dot"></div>
+                    </div>
+                    
+                    <!-- 右側：吹き出し -->
+                    <div class="speech-bubble-container">
+                        <div class="speech-bubble">
+                            <textarea 
+                                class="speech-textarea"
+                                rows="2" 
+                                placeholder="${placeholderText}"
+                                onInput="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'; saveToLocalStorage();"
+                            >${savedValue}</textarea>
+                        </div>
+                    </div>
+                `;
+                
+                timeline.appendChild(timelineItem);
+            });
+
+            // テキストエリアの高さを調整
+            setTimeout(() => {
+                const textareas = timeline.querySelectorAll('textarea');
+                textareas.forEach(textarea => {
+                    if (textarea.value) {
+                        textarea.style.height = 'auto';
+                        textarea.style.height = textarea.scrollHeight + 'px';
+                    }
+                });
+            }, 0);
+        }
+
+        // 初期タイムライン生成
+        loadFromLocalStorage();
+        generateTimeline();
+        
+        // モード管理
+        let isViewMode = false;
+        
+        function switchToViewMode() {
+            // 既に表示モードの場合は何もしない
+            if (isViewMode) return;
+            
+            isViewMode = true;
+            
+            // コントロール枠を非表示
+            const controlPanel = document.querySelector('.control-panel');
+            controlPanel.style.display = 'none';
+            
+            // 既存の表示用divを削除（念のため）
+            const existingViewTexts = document.querySelectorAll('.view-mode-text');
+            existingViewTexts.forEach(viewText => {
+                viewText.remove();
+            });
+            
+            // テキストエリアを読み取り専用の表示に変更
+            const textareas = document.querySelectorAll('#timeline textarea');
+            textareas.forEach(textarea => {
+                // 入力された内容のみを表示（プレースホルダーは表示しない）
+                const content = textarea.value.trim();
+                const speechBubble = textarea.closest('.speech-bubble');
+                
+                // 吹き出し全体を非表示
+                speechBubble.style.display = 'none';
+                
+                // 内容がある場合のみ表示用のdivを作成
+                if (content) {
+                    const parent = speechBubble.parentElement;
+                    const displayDiv = document.createElement('div');
+                    displayDiv.className = 'view-mode-text';
+                    displayDiv.textContent = content;
+                    
+                    parent.appendChild(displayDiv);
+                }
+            });
+            
+            // ボタンの状態を更新
+            updateModeButtons();
+            
+            const saveStatus = document.getElementById('saveStatus');
+            saveStatus.textContent = '👁️ 表示モードに切り替えました';
+            saveStatus.style.color = '#7c3aed';
+            saveStatus.style.opacity = '1';
+            
+            setTimeout(() => {
+                saveStatus.style.opacity = '0';
+            }, 2000);
+        }
+        
+        function switchToEditMode() {
+            // 既に編集モードの場合は何もしない
+            if (!isViewMode) return;
+            
+            isViewMode = false;
+            
+            // コントロール枠を表示
+            const controlPanel = document.querySelector('.control-panel');
+            controlPanel.style.display = 'block';
+            
+            // 表示用のdivを削除
+            const viewTexts = document.querySelectorAll('.view-mode-text');
+            viewTexts.forEach(viewText => {
+                viewText.remove();
+            });
+            
+            // 吹き出しを再表示
+            const speechBubbles = document.querySelectorAll('.speech-bubble');
+            speechBubbles.forEach(speechBubble => {
+                speechBubble.style.display = 'block';
+            });
+            
+            const textareas = document.querySelectorAll('#timeline textarea');
+            textareas.forEach(textarea => {
+                textarea.style.display = 'block';
+                // 高さを再調整
+                textarea.style.height = 'auto';
+                textarea.style.height = textarea.scrollHeight + 'px';
+            });
+            
+            // ボタンの状態を更新
+            updateModeButtons();
+            
+            const saveStatus = document.getElementById('saveStatus');
+            saveStatus.textContent = '✏️ 編集モードに切り替えました';
+            saveStatus.style.color = '#ea580c';
+            saveStatus.style.opacity = '1';
+            
+            setTimeout(() => {
+                saveStatus.style.opacity = '0';
+            }, 2000);
+        }
+        
+        function updateModeButtons() {
+            const viewButton = document.querySelector('button[onclick="switchToViewMode()"]');
+            const editButton = document.querySelector('button[onclick="switchToEditMode()"]');
+            
+            if (isViewMode) {
+                viewButton.style.opacity = '0.6';
+                viewButton.style.transform = 'scale(0.95)';
+                editButton.style.opacity = '1';
+                editButton.style.transform = 'scale(1)';
+            } else {
+                viewButton.style.opacity = '1';
+                viewButton.style.transform = 'scale(1)';
+                editButton.style.opacity = '0.6';
+                editButton.style.transform = 'scale(0.95)';
+            }
+        }
+        
+        // 初期状態で編集モードのボタンを強調
+        updateModeButtons();
+
+        // LocalStorage機能
+        function saveToLocalStorage() {
+            try {
+                const data = {
+                    startTime: document.getElementById('startTime').value,
+                    bedTime: document.getElementById('bedTime').value,
+                    interval: currentInterval,
+                    schedule: saveScheduleData(),
+                    savedAt: new Date().toISOString()
+                };
+                localStorage.setItem('nightRoutineData', JSON.stringify(data));
+            } catch (error) {
+                console.error('LocalStorage保存エラー:', error);
+            }
+        }
+        
+        function loadFromLocalStorage() {
+            try {
+                const savedData = localStorage.getItem('nightRoutineData');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    
+                    // 設定を復元
+                    if (data.startTime) document.getElementById('startTime').value = data.startTime;
+                    if (data.bedTime) document.getElementById('bedTime').value = data.bedTime;
+                    if (data.interval) {
+                        currentInterval = data.interval;
+                        currentIntervalIndex = intervals.indexOf(currentInterval);
+                        updateIntervalDisplay();
+                    }
+                    
+                    // スケジュールデータを復元（タイムライン生成後に実行）
+                    setTimeout(() => {
+                        if (data.schedule) {
+                            const textareas = document.querySelectorAll('#timeline textarea');
+                            textareas.forEach(textarea => {
+                                const timeElement = textarea.closest('.timeline-item').querySelector('.time-display');
+                                if (timeElement && data.schedule[timeElement.textContent]) {
+                                    textarea.value = data.schedule[timeElement.textContent];
+                                    textarea.style.height = 'auto';
+                                    textarea.style.height = textarea.scrollHeight + 'px';
+                                }
+                            });
+                        }
+                    }, 100);
+                }
+            } catch (error) {
+                console.error('LocalStorage読み込みエラー:', error);
+            }
+        }
+    </script>
 </body>
 </html>
