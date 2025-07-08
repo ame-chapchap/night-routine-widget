@@ -68,31 +68,23 @@
         .title {
             font-size: 2.25rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #8b5cf6, #6366f1, #8b5cf6);
-            background-size: 200% 200%;
-            animation: gradientShift 3s ease-in-out infinite;
+            background: linear-gradient(to right, #8b5cf6, #6366f1, #8b5cf6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            color: transparent;
             text-align: center;
             margin-bottom: 0.5rem;
             letter-spacing: 0.5px;
-            text-shadow: 0 2px 4px rgba(139, 92, 246, 0.1);
+            filter: drop-shadow(0 3px 8px rgba(139, 92, 246, 0.4)) drop-shadow(0 0 15px rgba(99, 102, 241, 0.25));
+            width: 100%;
+            display: block;
         }
         
-        @keyframes gradientShift {
-            0%, 100% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-        }
-        
-        /* フォールバック用（グラデーションテキストが対応していないブラウザ向け） */
+        /* フォールバック用 */
         @supports not (-webkit-background-clip: text) {
             .title {
-                color: #7c3aed;
+                color: #8b5cf6;
                 background: none;
             }
         }
